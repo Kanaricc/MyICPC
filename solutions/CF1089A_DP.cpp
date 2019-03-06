@@ -30,6 +30,7 @@ bool dfs(int wm,int fm,int ws,int fs){
     //one reached winscore
     //win
     //TODO: if ws-winscore>=0 fs-ofs>=0
+    if(!(wm==2 && fm==3)){
     for(int ofs=0;ofs<=winscore-2;ofs++){
         if(wm-1<0 || ws-winscore<0 || fs-ofs<0)break;
         if(dfs(wm-1,fm,ws-winscore,fs-ofs)){
@@ -40,8 +41,10 @@ bool dfs(int wm,int fm,int ws,int fs){
             }
         }
     }
+    }
     //fail
     //TODO: if above
+    if(!(wm==3 && fm==2)){
     for(int ows=0;ows<=winscore-2;ows++){
         if(fm-1<0 || ws-ows<0 || fs-winscore<0)break;
         if(dfs(wm,fm-1,ws-ows,fs-winscore)){
@@ -53,9 +56,11 @@ bool dfs(int wm,int fm,int ws,int fs){
             }
         }
     }
+    }
     //up than winscore
     //win
     //TODO: if above
+    if(!(wm==2 && fm==3)){
     for(int ows=winscore+1;ows<=ws;ows++){
         if(wm-1<0 || ws-ows<0 || fs-(ows-2)<0)break;
         if(dfs(wm-1,fm,ws-ows,fs-(ows-2))){
@@ -67,8 +72,10 @@ bool dfs(int wm,int fm,int ws,int fs){
             }
         }
     }
+    }
     //fail
     //TODO: if above
+    if(!(wm==3 && fm==2)){
     for(int ofs=winscore+1;ofs<=fs;ofs++){
         if(fm-1<0 || ws-(ofs-2)<0 || fs-ofs<0)break;
         if(dfs(wm,fm-1,ws-(ofs-2),fs-ofs)){
@@ -80,21 +87,29 @@ bool dfs(int wm,int fm,int ws,int fs){
             }
         }
     }
+    }
 }
 
 void init_dp(){
+    dp[0][0][0][0]=1;
+    /*
     for(int fs=0;fs<=23;fs++){
-        dp[1][0][25][fs]=1;
-        solution[1][0][25][fs].push_back(Sol(25,fs));
+        dp[0][0][25][fs]=1;
+        solution[0][0][25][fs].push_back(Sol(25,fs));
 
-        dp[0][1][fs][25]=1;
-        solution[0][1][fs][25].push_back(Sol(fs,25));
+        dp[0][0][fs][25]=1;
+        solution[0][0][fs][25].push_back(Sol(fs,25));
     }
+    */
 }
 void print_sol(int wm,int fm,int ws,int fs){
     vector<Sol> &sols=solution[wm][fm][ws][fs];
-    if(wm>fm)sort(sols.begin(),sols.end(),cmp_win);
-    else sort(sols.begin(),sols.end(),cmp_fail);
+    auto border=sols.end();
+    if(((border-1)->a==15 && (border-1)->a>(border-1)->b) || ((border-1)->b==15 && (border-1)->b>(border-1)->a)){
+        border--;
+    }
+    if(wm>fm)sort(sols.begin(),border,cmp_win);
+    else sort(sols.begin(),border,cmp_fail);
     for(int i=0;i<solution[wm][fm][ws][fs].size();i++){
         Sol &sol=solution[wm][fm][ws][fs][i];
         cout<<sol.a<<":"<<sol.b<<" ";
@@ -125,6 +140,9 @@ int main(){
         }else if(dp[3][2][a][b]){
             cout<<"3:2"<<endl;
             print_sol(3,2,a,b);
+        }else if(dp[2][3][a][b]){
+            cout<<"2:3"<<endl;
+            print_sol(2,3,a,b);
         }else if(dp[1][3][a][b]){
             cout<<"1:3"<<endl;
             print_sol(1,3,a,b);
