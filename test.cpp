@@ -1,39 +1,48 @@
-#include <string>
 #include <iostream>
+#include <vector>
 using namespace std;
+const int MAXV=100100,MAXE=200100;
 
-const int Q=100007
-const int D=27;
+struct Edge{
+    int v,n;
+}edges[MAXE];
+int head[MAXV],idx=0;
 
-int isMatch(string S, int is, string P, int plen)
-{
-    for(int ip=0;ip < plen;is++, ip++)
-        if(S[is] != P[ip])
-            return 0;
-    return 1;
+void adde(int u,int v){
+    edges[++idx].v=v;
+    edges[idx].n=head[u];
+    head[u]=idx;
 }
-
-int RK(string S, string P)
-{
-    int plen  = P.size(),slen  = S.size();
-    unsigned int h   = 1
-    unsigned int A   = 0;
-    unsigned int St  = 0;
-
-    //��ʼ���������d�����µ����λ
-    for(int i = 0;i < plen - 1;i++)
-        h = (h*D) % Q;
-
-    for(int i = 0; i < plen; i++){
-        A = (D*A + (P[i] - 'a')) % Q;
-        St = (D*St + (S[i] - 'a')) % Q;
+int depth[MAXV];
+int maxdepth=0;
+void dfs(int u,int dep){
+    maxdepth=max(maxdepth,dep);
+    depth[u]=dep;
+    for(int ei=head[u];ei;ei=edges[ei].n){
+        Edge &e=edges[ei];
+        dfs(e.v,dep+1);
+    }
+}
+int root;
+int main(){
+    int n;cin>>n;
+    for(int i=1;i<=n;i++){
+        int u;cin>>u;
+        if(u==-1)root=i;
+        else adde(u,i);
     }
 
-    for(int i = 0; i < slen-plen; i++){
-        if(A == St)
-            if(isMatch(S,i,P,plen))return i;
-        St = (D*(St - h*(S[i]-'a'))+(S[i+plen]-'a')) % Q;
+    dfs(root,1);
+    cout<<maxdepth<<endl;
+    vector<int> ans;
+    for(int i=1;i<=n;i++){
+        if(depth[i]==maxdepth)ans.push_back(i);
     }
+    for(int i=0;i<ans.size()-1;i++){
+        cout<<ans[i]<<" ";
+    }
+    cout<<ans[ans.size()-1]<<endl;
 
-    return -1;
+    return 0;
 }
+        
