@@ -28,6 +28,15 @@ struct Node{
         if(ch[1])b=ch[1]->height;
         return abs(a-b)<=1;
     }
+    int initheight(){
+        if(ch[0]==NULL && ch[1]==NULL)return 0;
+        if(height)return height;
+        int a=0,b=0;
+        if(ch[0])a=ch[0]->initheight();
+        if(ch[1])b=ch[1]->initheight();
+        height=max(a,b)+1;
+        return height;
+    }
     bool pos(Node *node){
         return ch[1]==node;
     }
@@ -83,6 +92,24 @@ void insert(int x,Node *fafa,Node *fa,Node **node){
 
         if(fafa==NULL)return;
         autorotate(fafa,fa,*node);
+        /*
+        if(!fafa->isbalance()){
+            int fapos=fafa->pos(fa);
+            int pos=fa->pos(*node);
+            if((fapos^pos)==0){
+                rotate(fa);
+                fafa->update();
+                fa->update();
+            }else{
+                rotate(nn);
+                fa->update();
+                nn->update();
+                rotate(nn);
+                fafa->update();
+                nn->update();
+            }
+        }
+        */
         return;
     }
 
@@ -106,6 +133,17 @@ void INSERT(int x){
         }
     }
 }
+void travel(Node *node){
+    if(node->ch[0]){
+        cout<<node->data<<"->"<<node->ch[0]->data<<endl;
+        travel(node->ch[0]);
+    }
+    if(node->ch[1]){
+        cout<<node->data<<"->"<<node->ch[1]->data<<endl;
+        travel(node->ch[1]);
+    }
+}
+
 int main(){
     int len;cin>>len;
     for(int i=0;i<len;i++){
