@@ -1,13 +1,11 @@
-6 5
-John
-  Robert
-    Frank
-    Andrew
-  Nancy
-    David
-Robert is a child of John
-Robert is an ancestor of Andrew
-Robert is a sibling of Nancy
-Nancy is the parent of Frank
-John is a descendant of Andrew
-
+5 5
+Day is-a Time
+Appointment is-a Datebook
+Appointment is-a Reminder
+Appointment has-a Day
+Datebook has-a Year
+Day is-a Time
+Time is-a Day
+Appointment has-a Time
+Appointment has-a Year
+Day is-a Day

@@ -1,119 +1,52 @@
 #include <iostream>
-#include <algorithm>
 using namespace std;
-struct Node{
-    int data;
-    Node *ch[2];
-    Node *fa;
-    int height;
-    Node(){
-        height=1;
-        data=0;
-        ch[0]=ch[1]=NULL;
-    }
-    Node(int data):data(data){
-        height=1;
-        ch[0]=ch[1]=NULL;
-    }
-    int update(){
-        int a=0,b=0;
-        if(ch[0])a=ch[0]->height;
-        if(ch[1])b=ch[1]->height;
-        height=max(a,b)+1;
-        return height;
-    }
-    bool isbalance(){
-        int a=0,b=0;
-        if(ch[0])a=ch[0]->height;
-        if(ch[1])b=ch[1]->height;
-        return abs(a-b)<=1;
-    }
-    bool pos(Node *node){
-        return ch[1]==node;
-    }
-};
-Node *root;
-void rotate(Node *node){
-    Node *fa=node->fa;
-    if(fa==NULL)return;
-    int wai=fa->pos(node);
-    fa->ch[wai]=node->ch[!wai];
-    if(fa->ch[wai]!=NULL)fa->ch[wai]->fa=fa;
-    node->ch[!wai]=fa;
+double CouponPrice(double);
 
-    node->fa=fa->fa;
-    if(node->fa!=NULL)node->fa->ch[node->fa->pos(fa)]=node;
-    else root=node;
-    fa->fa=node;
-}
-bool autorotate(Node *fafa,Node *fa,Node *node){
-    if(fafa==NULL)return true;
-    node->update();
-    fa->update();
-    fafa->update();
-    if(!fafa->isbalance()){
-        int fapos=fafa->pos(fa);
-        int pos=fa->pos(node);
-        if((fapos^pos)==0){
-            rotate(fa);
-            fafa->update();
-            fa->update();
-            if(fa->fa!=NULL)
-                return autorotate(fa->fa->fa,fa->fa,fa);
-        }else{
-            rotate(node);
-            fa->update();
-            node->update();
-            rotate(node);
-            fafa->update();
-            node->update();
-            if(node->fa!=NULL)
-                return autorotate(node->fa->fa,node->fa,node);
+double ConponPrice(double x)
+{
+    int c=x/1000;
+    switch(c)
+    {
+    case 0:
+        if(x>0)
+        {x=x;
         }
-    }else return autorotate(fafa->fa,fafa,fa);
-
-    return true;
-}
-void insert(int x,Node *fafa,Node *fa,Node **node){
-    if(*node==NULL){
-        *node=new Node(x);
-        (*node)->fa=fa;
-        if(fa==NULL)return;
-        fa->update();
-
-        if(fafa==NULL)return;
-        autorotate(fafa,fa,*node);
-        return;
-    }
-
-    if(x<=(*node)->data){
-        insert(x,fa,*node,&((*node)->ch[0]));
-    }else{
-        insert(x,fa,*node,&((*node)->ch[1]));
-    }
-    if(fa==NULL)return;
-    fa->update();
-    if(fafa==NULL)return;
-    fafa->update();
-}
-void INSERT(int x){
-    if(root==NULL)insert(x,NULL,NULL,&root);
-    else{
-        if(x<=root->data){
-            insert(x,NULL,root,&(root->ch[0]));
-        }else{
-            insert(x,NULL,root,&(root->ch[1]));
+        else x=0;
+        break;
+    case 1:
+        x=0.95*x;
+        break;
+    case 2:
+        x=0.9*x;
+        break;
+    case 3:
+        x=0.85*x;
+        break;
+    case 4:
+        x=0.85*x;
+        break;
+    case 5:case 6:case 7:case 8:case 9:
+        x=0.8*x;
+        break;
+    case 10:
+        if(x>10000)
+        {
+            x=0;
         }
+        else x=8000;
+        break;
+    default:
+        x=0;
+
     }
+    return x;
 }
-int main(){
-    int len;cin>>len;
-    for(int i=0;i<len;i++){
-        int x;cin>>x;
-        INSERT(x);
-    }
-    cout<<root->data<<endl;
+int main()
+{
+    cout << "enter the price:" ;
+    double x;
+    cin>>x;
+    cout<<"the coupon price is:"<<ConponPrice(x);
 
     return 0;
 }
-
