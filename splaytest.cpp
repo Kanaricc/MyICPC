@@ -6,7 +6,8 @@ const int MAXN=100;
 
 struct Node{
     Node *ch[2];
-    int key;
+    int key,val;
+    int isum=0;
     Node *fa;
     int data;//this is just a example.in this, we count the size of subtree.
     bool sign;
@@ -14,16 +15,28 @@ struct Node{
     int pos(Node *node){
         return ch[1]==node;
     }
-    Node(int val):key(val){}
+    Node(int key):key(key){}
     Node(){}
-    Node(int val,Node *fa):key(val),fa(fa){}
+    Node(int key,Node *fa):key(key),fa(fa){}
+
+    void setval(int val){
+        this->val=val;
+    }
+    static int getval(Node *node){
+        return node?node->val:0;
+    }
+    static int getsum(Node *node){
+        return node?node->isum:0;
+    }
 
     static int size(Node *node){
         return node?node->data:0;
     }
     static void update(Node *node){
         node->data=Node::size(node->ch[0])+Node::size(node->ch[1])+1;
+        node->isum=Node::getsum(node->ch[0])+Node::getsum(node->ch[1])+Node::getval(node->ch[0])+Node::getval(node->ch[1]);
         cout<<"node "<<node->key<<":"<<node->data<<endl;
+        cout<<"node.s "<<node->key<<":"<<node->isum<<endl;
     }
     static bool tag(Node *node){
         return node?node->sign:0;
@@ -107,19 +120,29 @@ struct Splay{
         Node::tag(node->ch[0],Node::tag(node));
         Node::tag(node->ch[1],Node::tag(node));
     }
+    //[l,r]
+    void buildseq(int l,int r){
+        Node *nl=findpre(l);
+        Node *rl=findsuf(r);
+        splay(nl,NULL);
+        splay(rl,nl);
+    }
+
 
 
    //insert a new value at a empty leaf, then splay it. 
-    void insert(int val){
-        if(root==NULL)root=new Node(val);
+    void insert(int key){
+        if(root==NULL){
+            root=new Node(key);
+        }
         //to make sure left child is smaller strictly than its father
-        for(Node *node=root;node;node=node->ch[val>=node->key]){
-            if(node->key==val){
+        for(Node *node=root;node;node=node->ch[key>=node->key]){
+            if(node->key==key){
                 //TODO: keys in this tree are unique. maybe it should be improved.
                 splay(node,NULL);return;
             }
-            if(node->ch[val>=node->key]==NULL)
-                node->ch[val>=node->key]=new Node(val,node);
+            if(node->ch[key>=node->key]==NULL)
+                node->ch[key>=node->key]=new Node(key,node);
         }
     }
     //take the one to root.
@@ -179,6 +202,7 @@ struct Splay{
         Node *t=find(key);
         if(t==NULL)return NULL;
         Node *p=t->ch[0];
+        if(p==NULL)return NULL;
         while(p->ch[1]!=NULL)p=p->ch[1];
         splay(p,NULL);
         return p;
@@ -187,6 +211,7 @@ struct Splay{
         Node *t=find(key);
         if(t==NULL)return NULL;
         Node *p=t->ch[1];
+        if(p==NULL)return NULL;
         while(p->ch[0]!=NULL)p=p->ch[0];
         splay(p,NULL);
         return p;
@@ -206,6 +231,8 @@ int main(){
     Splay splay;
     string op;
     int inp;
+    splay.insert(0);
+    splay.insert(0x3f3f3f3f);
     while(cin>>op>>inp){
         if(op=="i")splay.insert(inp);
         else if(op=="e")splay.erase(inp);
@@ -213,6 +240,10 @@ int main(){
         else if(op=="fp")splay.findpre(inp);
         else if(op=="fs")splay.findsuf(inp);
         else if(op=="size")cout<<splay.getdata(inp)<<endl;
+        else if(op=="ms"){
+            int r;cin>>r;
+            splay.buildseq(inp,r);
+        }
         cout<<"============="<<endl;
     }
     return 0;
