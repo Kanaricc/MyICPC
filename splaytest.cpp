@@ -2,7 +2,7 @@
 #include <queue>
 using namespace std;
 
-const int MAXN=10;
+const int MAXN=100;
 
 struct Node{
     Node *ch[2];
@@ -66,6 +66,10 @@ struct Splay{
         Node *fa=node->fa;
         if(fa==NULL)return;
 
+        //tag should be pushed down before rotating.
+        pushdown(fa);
+        pushdown(node);
+
         int wai=fa->pos(node);
         fa->ch[wai]=node->ch[!wai];
         if(fa->ch[wai]!=NULL) fa->ch[wai]->fa=fa;
@@ -77,7 +81,7 @@ struct Splay{
         else root=node;
         fa->fa=node;
 
-        //update the data and push tag down.
+        //update the data.
         Node::update(fa);Node::update(node);
     }
     //splay will rotate node until it becomes target's children.
@@ -96,9 +100,14 @@ struct Splay{
                 }
             }
         }
+        node->update(node);
     }
     void pushdown(Node *node){
         if(!Node::tag(node))return;
+        Node::tag(node->ch[0],Node::tag(node));
+        Node::tag(node->ch[1],Node::tag(node));
+    }
+
 
    //insert a new value at a empty leaf, then splay it. 
     void insert(int val){
@@ -140,6 +149,19 @@ struct Splay{
                 if(lc->ch[1]!=NULL)lc->ch[1]->fa=lc;
             }
         }
+    }
+    int getdata(int key){
+        Node *t=root;
+        while(t){
+            if(t->key==key)break;
+            t=t->ch[key>t->key];
+        }
+        int res=-1;
+        if(t!=NULL){
+            res=t->data;
+            splay(t,NULL);
+        }
+        return res;
     }
     Node* find(int key){
         Node *t=root;
@@ -190,6 +212,7 @@ int main(){
         else if(op=="d")splay.print(splay.root);
         else if(op=="fp")splay.findpre(inp);
         else if(op=="fs")splay.findsuf(inp);
+        else if(op=="size")cout<<splay.getdata(inp)<<endl;
         cout<<"============="<<endl;
     }
     return 0;
