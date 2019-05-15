@@ -6,7 +6,8 @@ const int MAXN=100;
 
 struct Node{
     Node *ch[2];
-    int key,val;
+    double key;
+    int val;
     int isum=0;
     Node *fa;
     int data;//this is just a example.in this, we count the size of subtree.
@@ -15,9 +16,14 @@ struct Node{
     int pos(Node *node){
         return ch[1]==node;
     }
-    Node(int key):key(key){}
-    Node(){}
-    Node(int key,Node *fa):key(key),fa(fa){}
+    Node(double key):key(key){
+        ch[0]=ch[1]=NULL;
+        fa=NULL;
+    }
+    //Node(){}
+    Node(double key,Node *fa):Node(key){
+        this->fa=fa;
+    }
 
     void setval(int val){
         this->val=val;
@@ -48,29 +54,7 @@ struct Node{
 
 };
 
-struct NodePool{
-    Node nodes[MAXN];
-    queue<Node*> q;
-    NodePool(){
-        for(int i=0;i<MAXN;i++)q.push(&nodes[i]);
-    }
-    Node* newnode(){
-        if(q.empty()){
-            cout<<"ERROR:memory pool is empty!"<<endl;
-            return 0;
-        }
-        Node *res=q.front();q.pop();
-        res->ch[0]=res->ch[1]=0;
-        res->fa=0;
-        res->key=0;
-        return res;
-    }
-    void freenode(Node *node){
-        q.push(node);
-    }
-};
 struct Splay{
-    NodePool pool;
     Node *root;
     Splay(){
         root=NULL;
@@ -131,7 +115,7 @@ struct Splay{
 
 
    //insert a new value at a empty leaf, then splay it. 
-    void insert(int key,int val){
+    void insert(double key,int val){
         if(root==NULL){
             root=new Node(key);
             root->setval(val);
@@ -219,6 +203,21 @@ struct Splay{
         splay(p,NULL);
         return p;
     }
+    Node* findbyrank(int rank){
+        Node *t=root;
+        while(t!=NULL){
+            if(Node::size(t->ch[0])+1==rank){
+                splay(t,NULL);
+                return t;
+            }
+            else if(Node::size(t->ch[0])>=rank)t=t->ch[0];
+            else{
+                t=t->ch[1];
+                rank-=Node::size(t->ch[0])+1;
+            }
+        }
+        return NULL;
+    }
     void print(Node *node){
         if(node==NULL)return;
         cout<<node->key<<":";
@@ -229,9 +228,17 @@ struct Splay{
         print(node->ch[0]);print(node->ch[1]);
     }
 };
-
+int tick=1;
 int main(){
     Splay splay;
+    /*
+    int nlen,mlen;cin>>nlen>>mlen;
+    splay.insert(tick,0);
+    for(int i=0;i<nlen;i++){
+        int t;cin>>t;
+        splay.insert(tick*100000,t);
+        t++;
+    */
     string op;
     int inp;
     splay.insert(0,0);
@@ -242,6 +249,11 @@ int main(){
             splay.insert(inp,val);
         }
         else if(op=="e")splay.erase(inp);
+        else if(op=="rk"){
+            Node *res=splay.findbyrank(inp);
+            if(res)cout<<res->key<<endl;
+            else cout<<"NO"<<endl;
+        }
         else if(op=="d")splay.print(splay.root);
         else if(op=="fp")splay.findpre(inp);
         else if(op=="fs")splay.findsuf(inp);
