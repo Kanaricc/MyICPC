@@ -212,8 +212,8 @@ struct Splay{
             }
             else if(Node::size(t->ch[0])>=rank)t=t->ch[0];
             else{
-                t=t->ch[1];
                 rank-=Node::size(t->ch[0])+1;
+                t=t->ch[1];
             }
         }
         return NULL;
