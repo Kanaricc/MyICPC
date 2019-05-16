@@ -1,196 +1,155 @@
 #include <iostream>
-#include <iomanip>
-#include <queue>
+#include <ctime>
+#include <cstdlib>
+#include <vector>
+#include <algorithm>
+#include <cmath>
 using namespace std;
-typedef long long ll;
+typedef double num;
 
-struct Node{
-    Node *ch[2];
-    int key;
-    ll val;
-    ll isum=0;
-    Node *fa;
-    int data;//this is just a example.in this, we count the size of subtree.
-    bool sign;
-    //return the position of node in self's children, left or right child.
-    int pos(Node *node){
-        return ch[1]==node;
+const double EPS=1e-7;
+const double PI=acos(-1);
+int sgn(double x){
+    return (x>-EPS)-(x<EPS);
+}
+struct Vec{
+    double x,y;
+    Vec(){
+        x=y=0;
     }
-    Node(int key):key(key){
-        ch[0]=ch[1]=NULL;
-        fa=NULL;
+    Vec(double x,double y):x(x),y(y){}
+    double dot(const Vec &b)const{
+        return x*b.x+y*b.y;
     }
-    //Node(){}
-    Node(int key,Node *fa):Node(key){
-        this->fa=fa;
+    double cross(const Vec &b)const{
+        return x*b.y-b.x*y;
     }
-
-    void setval(ll val){
-        this->val=val;
+    double len(){
+        return sqrt(sqlen());
     }
-    static ll getval(Node *node){
-        return node?node->val:0;
+    double sqlen(){
+        return x*x+y*y;
     }
-    static ll getsum(Node *node){
-        return node?node->isum:0;
+    Vec normalize(){
+        double l=len();
+        return Vec(x/l,y/l);
     }
-
-    static int size(Node *node){
-        return node?node->data:0;
+    Vec rotate(double angle){
+        return Vec(x*cos(angle)-y*sin(angle),x*sin(angle)+y*cos(angle));
     }
-    static void update(Node *node){
-        node->data=Node::size(node->ch[0])+Node::size(node->ch[1])+1;
-        node->isum=Node::getsum(node->ch[0])+Node::getsum(node->ch[1])+Node::getval(node->ch[0])+Node::getval(node->ch[1]);
-        //cout<<"node "<<node->key<<":"<<node->data<<endl;
-        //cout<<"node.s "<<node->key<<":"<<node->isum<<endl;
+    Vec operator * (double factor)const{
+        return Vec(x*factor,y*factor);
     }
-    static bool tag(Node *node){
-        return node?node->sign:0;
+    double operator * (const Vec &b)const{
+        return cross(b);
     }
-    static bool tag(Node *node,bool val){
-        if(node)node->sign=val;
-        return tag(node);
+    Vec operator - (const Vec &b)const{
+        return Vec(x-b.x,y-b.y);
     }
-
-};
-
-struct Splay{
-    Node *root;
-    Splay(){
-        root=NULL;
-    }
-    void rotate(Node *node){
-        Node *fa=node->fa;
-        if(fa==NULL)return;
-
-        //tag should be pushed down before rotating.
-        pushdown(fa);
-        pushdown(node);
-
-        int wai=fa->pos(node);
-        fa->ch[wai]=node->ch[!wai];
-        if(fa->ch[wai]!=NULL) fa->ch[wai]->fa=fa;
-
-        node->ch[!wai]=fa;
-
-        node->fa=fa->fa;
-        if(node->fa!=NULL)node->fa->ch[node->fa->pos(fa)]=node;
-        else root=node;
-        fa->fa=node;
-
-        //update the data.
-        Node::update(fa);Node::update(node);
-    }
-    //splay will rotate node until it becomes target's children.
-    void splay(Node *node,Node *target){
-        //if node and node'father are all at same position,we rotate p and x in order.
-        //if node and node'father are at different position, we rotate x twice.
-        while(node->fa!=target){
-            Node *fa=node->fa;
-            Node *gr=fa->fa;
-            if(gr==target)rotate(node);
-            else{
-                if(gr->pos(fa) ^ fa->pos(node)){
-                    rotate(node);rotate(node); //zig-zig
-                }else{
-                    rotate(fa);rotate(node); //zig-zag
-                }
-            }
-        }
-        node->update(node);
-    }
-    void pushdown(Node *node){
-        if(!Node::tag(node))return;
-        Node::tag(node->ch[0],Node::tag(node));
-        Node::tag(node->ch[1],Node::tag(node));
-    }
-
-   //insert a new value at a empty leaf, then splay it. 
-    void insert(int key,ll val){
-        if(root==NULL){
-            root=new Node(key);
-            root->setval(val);
-            splay(root,NULL);return;
-        }
-        //to make sure left child is smaller strictly than its father
-        for(Node *node=root;node;node=node->ch[key>=node->key]){
-            if(node->key==key){
-                //TODO: keys in this tree are unique. maybe it should be improved.
-                if(node->ch[1]==NULL){
-                    node->ch[1]=new Node(key,node);
-                    node=node->ch[1];
-                    node->setval(val);
-                }else{
-                    node=node->ch[1];
-                    while(node->ch[0]!=NULL){
-                        node=node->ch[0];
-                    }
-                    node->ch[0]=new Node(key,node);
-                    node=node->ch[0];
-                    node->setval(val);
-                }
-                splay(node,NULL);return;
-            }
-            if(node->ch[key>=node->key]==NULL){
-                node->ch[key>=node->key]=new Node(key,node);
-                node->ch[key>=node->key]->setval(val);
-                splay(node,NULL);return;
-            }
-        }
-    }
-    Node* findbyrank(int rank){
-        Node *t=root;
-        while(t!=NULL){
-            if(Node::size(t->ch[0])+1==rank){
-                splay(t,NULL);
-                return t;
-            }
-            else if(Node::size(t->ch[0])>=rank)t=t->ch[0];
-            else{
-                rank-=Node::size(t->ch[0])+1;
-                t=t->ch[1];
-            }
-        }
-        return NULL;
-    }
-    void print(Node *node){
-        if(node==NULL)return;
-        cout<<node->key<<":";
-        if(node->ch[0]!=NULL)cout<<node->ch[0]->key;
-        cout<<",";
-        if(node->ch[1]!=NULL)cout<<node->ch[1]->key;
-        cout<<endl;
-        print(node->ch[0]);print(node->ch[1]);
+    Vec operator +(const Vec &b)const{
+        return Vec(x+b.x,y+b.y);
     }
 };
+ostream& operator<<(ostream& out,const Vec &b){
+    out<<"("<<b.x<<", "<<b.y<<")";
+    return out;
+}
+typedef Vec Point;
+struct Line{
+    Point pos;
+    Vec dirc;
+    Line(Point pos=Point(0,0),Vec dirc=Vec(0,0)):pos(pos),dirc(dirc){}
+    static Line fromPoints(Point a,Point b){
+        return Line(a,b-a);
+    }
+    double getarea(const Line &b)const{
+        return abs(dirc.cross(b.dirc));
+    }
+    //得到垂线
+    //会标准化no
+    Line getppd(){
+        return Line(pos+dirc*0.5,dirc.rotate(PI/2));
+    }
+
+    Point getintersection(const Line &b)const{
+        Vec down=this->pos-b.pos;
+        double aa=b.dirc.cross(down);
+        double bb=this->dirc.cross(b.dirc);
+        return this->pos+this->dirc*(aa/bb);
+    }
+};
+
+struct Circle{
+    Point center;
+    Vec radius;
+    Circle(Point center,Vec radius):center(center),radius(radius){}
+    Circle(Point center,double r){
+        this->center=center;
+        radius=Vec(r,0);
+    }
+    Circle(const Line &diameter){
+        Point center=diameter.pos;
+        center=center+diameter.dirc*0.5;
+        this->center=center;
+        radius=diameter.dirc*0.5;
+    }
+    //-1: inner
+    //0: on
+    //1: outer
+    int cover(Point point){
+        double t=(point-center).sqlen();
+        double r=radius.sqlen();
+        return sgn(t-r);
+    }
+};
+
+Circle circumcircle(Point a,Point b,Point c){
+    Line l1=Line::fromPoints(a,b);
+    Line l2=Line::fromPoints(a,c);
+    Line l1p=l1.getppd(),l2p=l2.getppd();
+    Point center=l1p.getintersection(l2p);
+    return Circle(center,(a-center).len());
+
+}
+Circle minimum_covering_circle(vector<Point> &points){
+    random_shuffle(points.begin(),points.end());
+    Circle C(points[0],0);
+    for(int i=1;i<points.size();i++){
+        if(C.cover(points[i])<=0)continue;
+        C=Circle(points[i],0);
+        for(int j=0;j<=i-1;j++){
+            if(C.cover(points[j])<=0)continue;
+            C=Circle(Line(points[i],points[j]-points[i]));
+            for(int k=0;k<=j-1;k++){
+                if(C.cover(points[k])<=0)continue;
+                C=circumcircle(points[i],points[j],points[k]);
+            }
+        }
+    }
+    return C;
+}
+
+
 int main(){
-    Splay splay;
-    
-    int nlen,mlen;cin>>nlen>>mlen;
-    splay.insert(0,0);
-    for(int i=1;i<=nlen;i++){
-        int t;cin>>t;
-        splay.insert(i,t);
-    }
-    for(int i=0;i<mlen;i++){
-        int op;cin>>op;
-        if(op==0){
-            nlen++;
-            int r;
-            ll t;cin>>r>>t;
-            Node *res=splay.findbyrank(r+1);
-            int n;
-            if(res)n=res->key;
-            else n=nlen;
-            splay.insert(n,t);
-        }else if(op==1){
-            int r;cin>>r;
-            Node *l=splay.findbyrank(r+1)->ch[0];
+    srand(time(NULL));
+    Line a(Point(0,0),Vec(1,3)),b(Point(0,3),Vec(3,-3));
+    Point p=a.getintersection(b);
+    cout<<p.x<<" "<<p.y<<endl;
 
-            cout<<Node::getsum(l)+Node::getval(l)<<endl;
-        }else if(op==3){
-            splay.print(splay.root);
-        }
+    {
+        Circle C(Line(Point(-2,0),Point(2,0)-Point(-2,0)));
+        cout<<C.center<<" "<<C.radius<<endl;
     }
+    //test 4 minimum covering circle
+    {
+        vector<Point> v;
+        v.push_back(Point(-2,1));
+        v.push_back(Point(2,2));
+        v.push_back(Point(2,-2));
+        v.push_back(Point(1,1));
+        v.push_back(Point(1,0));
+        cout<<minimum_covering_circle(v).center<<endl;
+    }
+        
     return 0;
 }
