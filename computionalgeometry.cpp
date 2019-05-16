@@ -56,6 +56,9 @@ struct Vec{
     Vec operator +(const Vec &b)const{
         return Vec(x+b.x,y+b.y);
     }
+    double polar()const{
+        return atan2(y,x);
+    }
 };
 ostream& operator<<(ostream& out,const Vec &b){
     out<<"("<<b.x<<","<<b.y<<")";
