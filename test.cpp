@@ -1,4 +1,10 @@
+/**
+ * Test Result
+ * minimum_covering_circle passed.
+ *
+ */
 #include <iostream>
+#include <iomanip>
 #include <ctime>
 #include <cstdlib>
 #include <vector>
@@ -51,7 +57,7 @@ struct Vec{
     }
 };
 ostream& operator<<(ostream& out,const Vec &b){
-    out<<"("<<b.x<<", "<<b.y<<")";
+    out<<"("<<b.x<<","<<b.y<<")";
     return out;
 }
 typedef Vec Point;
@@ -132,7 +138,8 @@ Circle minimum_covering_circle(vector<Point> &points){
 
 int main(){
     srand(time(NULL));
-    Line a(Point(0,0),Vec(1,3)),b(Point(0,3),Vec(3,-3));
+    
+    Line a(Point(0,0),Vec(1.0/3,3.0/3)),b(Point(0,3),Vec(3,-3));
     Point p=a.getintersection(b);
     cout<<p.x<<" "<<p.y<<endl;
 
@@ -150,6 +157,11 @@ int main(){
         v.push_back(Point(1,0));
         cout<<minimum_covering_circle(v).center<<endl;
     }
-        
+    {
+        vector<Point> v;
+        v.push_back(Point(1,1));
+        cout<<minimum_covering_circle(v).center<<endl;
+    }
+
     return 0;
 }
