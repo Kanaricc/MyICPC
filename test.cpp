@@ -1,6 +1,7 @@
 /**
  * Test Result
  * minimum_covering_circle passed.
+ *  
  *
  */
 #include <iostream>
@@ -108,7 +109,7 @@ struct Circle{
         return sgn(t-r);
     }
 };
-
+// passed in minimum_covering_circle
 Circle circumcircle(Point a,Point b,Point c){
     Line l1=Line::fromPoints(a,b);
     Line l2=Line::fromPoints(a,c);
@@ -117,6 +118,7 @@ Circle circumcircle(Point a,Point b,Point c){
     return Circle(center,(a-center).len());
 
 }
+// passed ensured by 
 Circle minimum_covering_circle(vector<Point> &points){
     random_shuffle(points.begin(),points.end());
     Circle C(points[0],0);
