@@ -1,9 +1,3 @@
-/**
- * Test Result
- * minimum_covering_circle passed.
- *  
- *
- */
 #include <iostream>
 #include <iomanip>
 #include <ctime>
@@ -59,6 +53,12 @@ struct Vec{
     double polar()const{
         return atan2(y,x);
     }
+    bool leftby(const Vec &b)const{
+        return sgn(b.cross(*this))>0;
+    }
+    bool samed(const Vec &b)const{
+        return sgn(this->cross(b))==0 && sgn(this->dot(b))>0;
+    }
 };
 ostream& operator<<(ostream& out,const Vec &b){
     out<<"("<<b.x<<","<<b.y<<")";
@@ -76,7 +76,7 @@ struct Line{
         return abs(dirc.cross(b.dirc));
     }
     //得到垂线
-    //会标准化no
+    //不会标准化
     Line getppd(){
         return Line(pos+dirc*0.5,dirc.rotate(PI/2));
     }
@@ -140,33 +140,50 @@ Circle minimum_covering_circle(vector<Point> &points){
     return C;
 }
 
+vector<Point> points;
+bool cmp(const Point &a,const Point &b){
+    return a.polar()<b.polar();
+}
+int main(){ 
 
-int main(){
-    srand(time(NULL));
-    
-    Line a(Point(0,0),Vec(1.0/3,3.0/3)),b(Point(0,3),Vec(3,-3));
-    Point p=a.getintersection(b);
-    cout<<p.x<<" "<<p.y<<endl;
+    int n;
+    while(cin>>n){
+        points.clear();
+        for(int i=0;i<n;i++){
+            int a,b;cin>>a>>b;
+            points.push_back(Point(a,b));
+        }
+        int sumr=0,sumd=0;
+        for(int i=0;i<n;i++){
+            //cout<<"select "<<points[i]<<endl;
+            vector<Vec> v;
+            for(int j=0;j<n;j++){
+                if(i==j)continue;
+                v.push_back(points[j]-points[i]);
+            }
+            sort(v.begin(),v.end(),cmp);
+            for(int i=0;i<v.size();i++){
+                //cout<<v[i]<<" ";
+            }
+            //cout<<endl;
+            int originsize=v.size();
+            for(int j=0;j<originsize;j++){
+                v.push_back(v[j]);
+            }
 
-    {
-        Circle C(Line(Point(-2,0),Point(2,0)-Point(-2,0)));
-        cout<<C.center<<" "<<C.radius<<endl;
+            int ld=0,le=1;
+            for(int j=0;j<originsize;j++){
+                //cout<<"choose "<<v[j]<<endl;
+                while(le<v.size() && (v[le].leftby(v[j]) || le==j))le++;
+                while(ld<v.size() && ld<le && sgn(v[j].dot(v[ld]))>0)ld++;
+                //cout<<"ld="<<ld<<",le="<<le<<endl;
+                sumr+=ld-j-1;
+                sumd+=le-ld;
+            }
+            //cout<<"============="<<endl;
+        }
+        //cout<<sumr<<","<<sumd<<endl;
+        cout<<(sumr-sumd*2)/3<<endl;
     }
-    //test 4 minimum covering circle
-    {
-        vector<Point> v;
-        v.push_back(Point(-2,1));
-        v.push_back(Point(2,2));
-        v.push_back(Point(2,-2));
-        v.push_back(Point(1,1));
-        v.push_back(Point(1,0));
-        cout<<minimum_covering_circle(v).center<<endl;
-    }
-    {
-        vector<Point> v;
-        v.push_back(Point(1,1));
-        cout<<minimum_covering_circle(v).center<<endl;
-    }
-
     return 0;
 }
