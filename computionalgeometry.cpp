@@ -14,11 +14,15 @@ int sgn(double x){
     return (x>-EPS)-(x<EPS);
 }
 struct Vec{
-    double x,y;
+    double x,y;//never change it yourself unless you dont need polar angle.
+    double _polar;// make cache to accumulate speed as atan is too slow.
+
     Vec(){
         x=y=0;
     }
-    Vec(double x,double y):x(x),y(y){}
+    Vec(double x,double y):x(x),y(y){
+        _polar=atan(y,x);
+    }
     double dot(const Vec &b)const{
         return x*b.x+y*b.y;
     }
@@ -51,13 +55,16 @@ struct Vec{
         return Vec(x+b.x,y+b.y);
     }
     double polar()const{
-        return atan2(y,x);
+        return _polar;
     }
     bool leftby(const Vec &b)const{
         return sgn(b.cross(*this))>0;
     }
     bool samed(const Vec &b)const{
         return sgn(this->cross(b))==0 && sgn(this->dot(b))>0;
+    }
+    bool operator<(const Vec &b)const{
+        return this->polar()<b.polar();
     }
 };
 ostream& operator<<(ostream& out,const Vec &b){
