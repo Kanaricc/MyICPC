@@ -2,7 +2,7 @@
 #include <queue>
 using namespace std;
 
-const int MAXN=100;
+const int MAXN=100010;
 
 struct Node{
     Node *ch[2];
@@ -43,8 +43,8 @@ struct Node{
     static void update(Node *node){
         node->data=Node::size(node->ch[0])+Node::size(node->ch[1])+node->cnt;
         node->isum=Node::getsum(node->ch[0])+Node::getsum(node->ch[1])+Node::getval(node->ch[0])+Node::getval(node->ch[1]);
-        cout<<"node "<<node->key<<":"<<node->data<<endl;
-        cout<<"node.s "<<node->key<<":"<<node->isum<<endl;
+        //cout<<"node "<<node->key<<":"<<node->data<<endl;
+        //cout<<"node.s "<<node->key<<":"<<node->isum<<endl;
     }
     static bool tag(Node *node){
         return node?node->sign:0;
@@ -157,7 +157,6 @@ struct Splay{
                 root=node->ch[1];
                 if(root!=NULL)root->fa=NULL;
             }else{
-
                 Node *lc=node->ch[0];
                 while(lc->ch[1]!=NULL)lc=lc->ch[1];
                 splay(lc,node);root=lc;
@@ -213,7 +212,7 @@ struct Splay{
     Node* findbyrank(int rank){
         Node *t=root;
         while(t!=NULL){
-            if(Node::size(t->ch[0])<=rank && rank<=Node::size(t->ch[0])+t->cnt){
+            if(Node::size(t->ch[0])+1<=rank && rank<=Node::size(t->ch[0])+t->cnt){
                 splay(t,NULL);
                 return t;
             }
@@ -246,47 +245,42 @@ int main(){
         splay.insert(tick*100000,t);
         t++;
     */
-    string op;
+    int op;
     int inp;
+    cin>>op;
     //splay.insert(0,0);
     //splay.insert(0x3f3f3f3f,0);
     while(cin>>op>>inp){
-        if(op=="i"){
+        if(op==1){
             int val;
             splay.insert(inp,0);
         }
-        else if(op=="e")splay.erase(inp);
-        else if(op=="frk"){
+        else if(op==2)splay.erase(inp);
+        else if(op==4){
             Node *res=splay.findbyrank(inp);
             if(res)cout<<res->key<<endl;
-            else cout<<"NO"<<endl;
+            else while(1);
         }
-        else if(op=="rk"){
+        else if(op==3){
             //to find the bucunzai
             splay.insert(inp,0);
             Node *res=splay.find(inp);
             if(res)cout<<Node::size(res->ch[0])+1<<endl;
-            else cout<<"NO"<<endl;
+            else while(1);
             splay.erase(inp);
         }
-        else if(op=="d")splay.print(splay.root);
-        else if(op=="fp"){
+        else if(op==5){
             //to find the bucunzai
             splay.insert(inp,0);
             cout<<splay.findpre(inp)->key<<endl;
             splay.erase(inp);
         }
-        else if(op=="fs"){
+        else if(op==6){
             splay.insert(inp,0);
             cout<<splay.findsuf(inp)->key<<endl;
             splay.erase(inp);
         }
-        else if(op=="size")cout<<splay.getdata(inp)<<endl;
-        else if(op=="ms"){
-            int r;cin>>r;
-            splay.buildseq(inp,r);
-        }
-        cout<<"============="<<endl;
+        //cout<<"============="<<endl;
     }
     return 0;
 }
