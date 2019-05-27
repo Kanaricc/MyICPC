@@ -1,11 +1,15 @@
-10	
-1	106465
-4	1
-1	317721
-1	460929
-1	644985
-1	84185
-1	89851
-6	81968
-1	492737
-5	493598
+5
+Nepgear
+Blanc
+Ram
+Rom
+Noire
+8
+Battle 1 5 12
+Event 5 20
+Harem? 1 5
+Event 1 2
+Event 2 2
+Event 3 2 
+BF 1 5
+GC 1 5
