@@ -9,7 +9,7 @@ void dopattern(string pat){
     nex1[0]=-1;
     int k=-1,j=0;
     int patlen=pat.size();
-    while(j<patlen-1){
+    while(j<patlen){
         if(k==-1 || pat[j]==pat[k]){
             ++k;++j;
             if(pat[j]!=pat[k])nex1[j]=k;

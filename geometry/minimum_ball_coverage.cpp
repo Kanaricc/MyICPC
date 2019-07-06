@@ -5,8 +5,6 @@
 using namespace std;
 const int MAXN=110;
 
-const double EPS=1e-8;
-
 struct Point{
     double x,y,z;
     Point(double x=0,double y=0,double z=0):x(x),y(y),z(z){}
@@ -23,6 +21,7 @@ int n;
 Point p[MAXN];
 double SA(Point start){
     const double DELTA=1000;
+    const double EPS=1e-8;
     double delta=DELTA;
     double ans=1e20;
     while(delta>EPS){

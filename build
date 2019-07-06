@@ -1,1 +1,1 @@
-g++ test.cpp -oo -g -Wall
+g++ test.cpp -o o -g -Wall
