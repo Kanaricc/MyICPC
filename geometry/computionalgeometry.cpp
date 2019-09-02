@@ -82,17 +82,41 @@ struct Line{
     double getarea(const Line &b)const{
         return abs(dirc.cross(b.dirc));
     }
-    //得到垂线
-    //不会标准化
+    // 鑾峰緱鍨傜嚎
     Line getppd(){
         return Line(pos+dirc*0.5,dirc.rotate(PI/2));
     }
 
+    //TODO: what will happen if they have no intersection,-nan
     Point getintersection(const Line &b)const{
         Vec down=this->pos-b.pos;
         double aa=b.dirc.cross(down);
         double bb=this->dirc.cross(b.dirc);
         return this->pos+this->dirc*(aa/bb);
+    }
+
+    bool point_on_line(Point point){
+        if(!dirc.samed(point-pos))
+        return false;
+        if(sgn((point-pos).sqlen()-dirc.sqlen())>0)
+        return false;
+        return true;
+    }
+
+    double get_distance(Point point){
+        Line ppd=getppd();
+        ppd.pos=point;
+
+        Point intersection=getintersection(ppd);
+
+        ppd.dirc=intersection-point;
+        Vec v=intersection-pos;
+
+        return abs(v.cross(point-pos)/v.len());
+    }
+
+    double get_distance(Line line){
+        return get_distance(line.pos);
     }
 };
 
@@ -177,11 +201,46 @@ vector<Point> convexHull(vector<Point> &points){
     }
     return stack;
 }
+
+double get_area(vector<Point> &points){
+    if(points.size()<3){
+        return -1;
+    }
+    sort(points.begin(),points.end(),[](Point &a,Point &b){
+        return a.polar()<b.polar();
+    });
+    Point base(0,0);
+    Point last=points[0];
+    double res=0;
+    for(int i=1;i<points.size();i++){
+        Vec a=last-base,b=points[i]-base;
+        res+=a.cross(b)/2;
+
+        last=points[i];
+    }
+    //add the last point(also the first point)
+    Vec a=last-base,b=points[0]-base;
+    res+=a.cross(b)/2;
+
+    return res;
+}
+
+bool point_in_polygen(Point point, vector<Point> &points){
+
+}
+
+
 vector<Point> points;
 bool cmp(const Point &a,const Point &b){
     return a.polar()<b.polar();
 }
-int main(){ 
+int main(){
+    Line a=Line::fromPoints(Point(0,0),Point(3,0));
+    Line b=Line::fromPoints(Point(2,0),Point(2,2));
+
+    Point inter=a.getintersection(b);
+    cout<<inter<<a.point_on_line(inter)<<endl;
+    /* convexHull
     int n;
     while(cin>>n){
         vector<Point> p;
@@ -194,6 +253,24 @@ int main(){
             cout<<hull[i]<<endl;
         }
     }
+    */
+    /*
+    Line a=Line::fromPoints(Point(0,0),Point(10,10));
+    Point point(0,1);
+
+    cout<<a.get_distance(point)<<endl;
+    */
+   /*
+    vector<Point> points;
+    points.push_back(Point(2,0));
+    points.push_back(Point(3,2));
+    points.push_back(Point(1,4));
+    points.push_back(Point(-1,3));
+
+    cout<<get_area(points)<<endl;
+    */
+    //dasd
+    
 
     return 0;
 }
