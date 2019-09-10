@@ -2,16 +2,16 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "gcc build active file",
-            "command": "/usr/bin/g++",
+            "label": "gcc.exe build active file",
+            "command": "C:\\Users\\iovo7\\scoop\\apps\\gcc\\current\\bin\\g++.exe",
             "args": [
                 "-g",
                 "${file}",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
             "options": {
-                "cwd": "/usr/bin"
+                "cwd": "C:\\Users\\iovo7\\scoop\\apps\\gcc\\current\\bin"
             }
         }
     ],

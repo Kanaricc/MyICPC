@@ -1,3 +1,4 @@
+//别名主席树
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
