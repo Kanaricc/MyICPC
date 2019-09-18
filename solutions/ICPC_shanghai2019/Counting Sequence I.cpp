@@ -1,3 +1,6 @@
+//打表
+//跑的太慢
+
 #include <iostream>
 #include <algorithm>
 #include <cstring>
