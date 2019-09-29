@@ -21,7 +21,7 @@ struct Vec{
         x=y=0;
     }
     Vec(double x,double y):x(x),y(y){
-        _polar=atan(y/x);
+        _polar=atan2(y,x);
     }
     double dot(const Vec &b)const{
         return x*b.x+y*b.y;

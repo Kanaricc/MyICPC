@@ -1,100 +1,139 @@
 #include <iostream>
-#include <cstring>
 #include <algorithm>
+#include <vector>
 #include <cstring>
+#include <cmath>
+#include <cstdlib>
 using namespace std;
-const int MAXN=50;
+const int MAXN=10;
 
-int dPre[MAXN],dSum[MAXN];
-int dy[MAXN];
-int lc[MAXN],rc[MAXN],idx=0;
+const double EPS=1e-7;
+const double PI=acos(-1);
+int sgn(double x){
+    return (x>-EPS)-(x<EPS);
+}
+struct Vec{
+    double x,y;//never change it yourself unless you dont need polar angle.
+    double _polar;// make cache to accumulate speed as atan is too slow.
 
-void build(int &n,int l,int r){
-    if(!n)n=++idx;
-    if(l>=r){
-        dPre[n]=dSum[n]=0;
-        dy[n]=r;
-        return;
+    Vec(){
+        x=y=0;
+    }
+    Vec(double x,double y):x(x),y(y){
+        _polar=atan2(y,x);
+    }
+    double dot(const Vec &b)const{
+        return x*b.x+y*b.y;
+    }
+    double cross(const Vec &b)const{
+        return x*b.y-b.x*y;
+    }
+    double len(){
+        return sqrt(sqlen());
+    }
+    double sqlen(){
+        return x*x+y*y;
+    }
+    Vec normalize(){
+        double l=len();
+        return Vec(x/l,y/l);
+    }
+    Vec rotate(double angle){
+        return Vec(x*cos(angle)-y*sin(angle),x*sin(angle)+y*cos(angle));
+    }
+    Vec operator * (double factor)const{
+        return Vec(x*factor,y*factor);
+    }
+    double operator * (const Vec &b)const{
+        return cross(b);
+    }
+    Vec operator - (const Vec &b)const{
+        return Vec(x-b.x,y-b.y);
+    }
+    Vec operator +(const Vec &b)const{
+        return Vec(x+b.x,y+b.y);
+    }
+    double polar()const{
+        return _polar;
+    }
+    bool leftby(const Vec &b)const{
+        return sgn(b.cross(*this))>0;
+    }
+    bool samed(const Vec &b)const{
+        return sgn(this->cross(b))==0 && sgn(this->dot(b))>0;
+    }
+    bool operator<(const Vec &b)const{
+        return this->polar()<b.polar();
+    }
+};
+ostream& operator<<(ostream& out,const Vec &b){
+    out<<"("<<b.x<<","<<b.y<<")"<<b.polar();
+    return out;
+}
+typedef Vec Point;
+struct Line{
+    Point pos;
+    Vec dirc;
+    Line(Point pos=Point(0,0),Vec dirc=Vec(0,0)):pos(pos),dirc(dirc){}
+    static Line fromPoints(Point a,Point b){
+        return Line(a,b-a);
+    }
+    double getarea(const Line &b)const{
+        return abs(dirc.cross(b.dirc));
+    }
+    // 获得垂线
+    Line getppd(){
+        return Line(pos+dirc*0.5,dirc.rotate(PI/2));
     }
 
-    int mid=(l+r)/2;
-    build(lc[n],l,mid);
-    build(rc[n],mid+1,r);
-}
-
-void collect(int n){
-    dSum[n]=dSum[lc[n]]+dSum[rc[n]];
-    if(dPre[lc[n]]-dy[lc[n]]>dSum[lc[n]]+dPre[rc[n]]-dy[rc[n]]){
-        dPre[n]=dPre[lc[n]];
-        dy[n]=dy[lc[n]];
-    }else{
-        dPre[n]=dSum[lc[n]]+dPre[rc[n]];
-        dy[n]=dy[rc[n]];
-    }
-}
-
-void modify(int p,int x,int L,int R,int n){
-    if(p==L && p==R){
-        dSum[n]+=x;
-        dPre[n]=max(0,dSum[n]);
-        return;
+    //TODO: what will happen if they have no intersection,-nan
+    Point getintersection(const Line &b)const{
+        Vec down=this->pos-b.pos;
+        double aa=b.dirc.cross(down);
+        double bb=this->dirc.cross(b.dirc);
+        return this->pos+this->dirc*(aa/bb);
     }
 
-    int mid=(L+R)/2;
-    if(p<=mid)modify(p,x,L,mid,lc[n]);
-    if(mid<p)modify(p,x,mid+1,R,rc[n]);
-
-    collect(n);
-}
-
-pair<int,int> query(int l,int r,int L,int R,int n){
-    if(l<=L && R<=r){
-        return make_pair(dPre[n],dy[n]);
+    bool point_on_line(Point point){
+        if(!dirc.samed(point-pos))
+        return false;
+        if(sgn((point-pos).sqlen()-dirc.sqlen())>0)
+        return false;
+        return true;
     }
 
-    int mid=(L+R)/2;
-    pair<int,int> res;
-    if(l<=mid)res=max(res,query(l,r,L,mid,lc[n]));
-    if(mid<r)res=max(res,query(l,r,mid+1,R,rc[n]));
-    return res;
-}
-struct Point{
-    int x,y,w;
-}points[MAXN];
-int root;
+    double get_distance(Point point){
+        Line ppd=getppd();
+        ppd.pos=point;
+
+        Point intersection=getintersection(ppd);
+
+        ppd.dirc=intersection-point;
+        Vec v=intersection-pos;
+
+        return abs(v.cross(point-pos)/v.len());
+    }
+
+    double get_distance(Line line){
+        return get_distance(line.pos);
+    }
+};
+struct P{
+    int i;
+    Point p;
+    bool origin;
+    P(Point p,bool origin,int i=0):p(p),origin(origin),i(i){}
+};
+vector<P> points;
+int ans[MAXN];
 int main(){
-    int nlen;cin>>nlen;
-    int miny=0x3f3f3f3f,maxy=-0x3f3f3f3f;
-    for(int i=1;i<=nlen;i++){
-        Point &p=points[i];
-        cin>>p.x>>p.y>>p.w;
-        if(p.x>p.y)swap(p.x,p.y);
-        miny=min(miny,p.y);
-        maxy=max(maxy,p.y);
+    int nlen,qlen;cin>>nlen>>qlen;
+    for(int i=0;i<nlen;i++){
+        int x,y;cin>>x>>y;
+        points.push_back(P(Point(x,y),1));
     }
-    sort(points+1,points+1+nlen,[](const Point &a,const Point &b){
-        if(a.x!=b.x)return a.x<b.x;
-        return a.y<b.y;
-    });
-
-    build(root,miny,maxy);
-
-    int ans=0;
-    
-    for(int i=nlen;i>=1;i--){
-        int thisx=points[i].x;
-        while(i>=1 && points[i].x==thisx){
-            Point &p=points[i];
-            cout<<"add "<<p.w<<" to "<<p.y<<endl;
-            modify(p.y,p.w,miny,maxy,root);
-            i--;
-        }
-        i++;
-
-        pair<int,int> res=query(miny,maxy,miny,maxy,root);
-        cout<<res.first<<" "<<res.second<<endl;
-        if(res.second>=thisx)ans=max(ans,res.first-res.second+thisx);
+    for(int i=0;i<qlen;i++){
+        int x,y;cin>>x>>y;
+        points.push_back(P(Point(x,y),0));
     }
-    cout<<ans<<endl;
-
 }
