@@ -2,6 +2,9 @@
 
 * cdq分治
 * 点分治
+* 数学板子
+* Link-cut tree
+* 最小环
 
 ## Tip
 
