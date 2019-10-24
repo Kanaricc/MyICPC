@@ -1,139 +1,194 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <string>
 #include <cstring>
-#include <cmath>
-#include <cstdlib>
+#include <stack>
+#include <queue>
 using namespace std;
 const int MAXN=10;
+struct Card{
+    int type;
+    int damage;
+    int cost;
+    int power;
 
-const double EPS=1e-7;
-const double PI=acos(-1);
-int sgn(double x){
-    return (x>-EPS)-(x<EPS);
-}
-struct Vec{
-    double x,y;//never change it yourself unless you dont need polar angle.
-    double _polar;// make cache to accumulate speed as atan is too slow.
+    Card(){}
+    Card(int type,int damage,int cost,int power):type(type),damage(damage),cost(cost),power(power){}
+} cards[MAXN];
+bool used[MAXN];
+int nlen;
+int md1,md2,md3;
+int mx1,mx2,mx3;
 
-    Vec(){
-        x=y=0;
+stack<int> ans_cards,ans_target;
+bool dfs(int stone,int power,int bl_me,int bl_en,int m1,int m2,int m3,int depth,bool nearend=false){
+    if(stone<0)return false;
+    if(depth>=3)return false;
+    if(bl_en<=0)return true;
+
+    if(depth>=1 && stone==10){
+        if(m1>0)bl_me-=md1;
+        if(m2>0)bl_me-=md2;
+        if(m3>0)bl_me-=md3;
+
+        if(m1<=0)m1=mx1;
+        if(m2<=0)m2=mx2;
+        if(m3<=0)m3=mx3;
     }
-    Vec(double x,double y):x(x),y(y){
-        _polar=atan2(y,x);
+    if(bl_me<=0)return false;
+
+    //full attacking to owner cannot kill it.
+    int fullattack=0;
+    int fakepower=power;
+    int unusd_lian=0;
+    for(int i=0;i<nlen;i++){
+        if(used[i])continue;
+        fakepower+=cards[i].power;
+        if(cards[i].type==1)continue;
+        unusd_lian++;
+        fullattack+=cards[i].damage;
     }
-    double dot(const Vec &b)const{
-        return x*b.x+y*b.y;
-    }
-    double cross(const Vec &b)const{
-        return x*b.y-b.x*y;
-    }
-    double len(){
-        return sqrt(sqlen());
-    }
-    double sqlen(){
-        return x*x+y*y;
-    }
-    Vec normalize(){
-        double l=len();
-        return Vec(x/l,y/l);
-    }
-    Vec rotate(double angle){
-        return Vec(x*cos(angle)-y*sin(angle),x*sin(angle)+y*cos(angle));
-    }
-    Vec operator * (double factor)const{
-        return Vec(x*factor,y*factor);
-    }
-    double operator * (const Vec &b)const{
-        return cross(b);
-    }
-    Vec operator - (const Vec &b)const{
-        return Vec(x-b.x,y-b.y);
-    }
-    Vec operator +(const Vec &b)const{
-        return Vec(x+b.x,y+b.y);
-    }
-    double polar()const{
-        return _polar;
-    }
-    bool leftby(const Vec &b)const{
-        return sgn(b.cross(*this))>0;
-    }
-    bool samed(const Vec &b)const{
-        return sgn(this->cross(b))==0 && sgn(this->dot(b))>0;
-    }
-    bool operator<(const Vec &b)const{
-        return this->polar()<b.polar();
-    }
-};
-ostream& operator<<(ostream& out,const Vec &b){
-    out<<"("<<b.x<<","<<b.y<<")"<<b.polar();
-    return out;
-}
-typedef Vec Point;
-struct Line{
-    Point pos;
-    Vec dirc;
-    Line(Point pos=Point(0,0),Vec dirc=Vec(0,0)):pos(pos),dirc(dirc){}
-    static Line fromPoints(Point a,Point b){
-        return Line(a,b-a);
-    }
-    double getarea(const Line &b)const{
-        return abs(dirc.cross(b.dirc));
-    }
-    // 获得垂线
-    Line getppd(){
-        return Line(pos+dirc*0.5,dirc.rotate(PI/2));
+    if(fullattack+fakepower*(unusd_lian)<bl_en)return false;
+    
+
+    for(int i=0;i<nlen;i++){
+        if(used[i])continue;
+        const Card &card=cards[i];
+        int reald=card.damage+power;
+
+        if(card.cost>stone)continue;
+
+        used[i]=1;
+        if(!nearend && card.type==1){
+            if(stone-card.cost>=0 && dfs(stone-card.cost,power+card.power,bl_me,bl_en,m1-reald,m2-reald,m3-reald,depth)){
+                ans_cards.push(i+1);
+                ans_target.push(-1);
+                return true;
+            }
+        }
+        if(!nearend && card.type==2){
+            if(stone-card.cost>=0 && dfs(stone-card.cost,power+card.power,bl_me,bl_en-reald,m1,m2,m3,depth)){
+                ans_cards.push(i+1);
+                ans_target.push(-1);
+                return true;
+            }
+        }
+        if(card.type==3){
+            if(stone-card.cost>=0 && dfs(stone-card.cost,power+card.power,bl_me,bl_en-reald,m1,m2,m3,depth,1)){
+                ans_cards.push(i+1);
+                ans_target.push(0);
+                return true;
+            }
+
+            if(m1>0 && stone-card.cost>=0 && dfs(stone-card.cost,power+card.power,bl_me,bl_en,m1-reald,m2,m3,depth,1)){
+                ans_cards.push(i+1);
+                ans_target.push(1);
+                return true;
+            }
+
+            if(m2>0 && stone-card.cost>=0 && dfs(stone-card.cost,power+card.power,bl_me,bl_en,m1,m2-reald,m3,depth,1)){
+                ans_cards.push(i+1);
+                ans_target.push(2);
+                return true;
+            }
+
+            if(m3>0 && stone-card.cost>=0 && dfs(stone-card.cost,power+card.power,bl_me,bl_en,m1,m2,m3-reald,depth,1)){
+                ans_cards.push(i+1);
+                ans_target.push(3);
+                return true;
+            }
+        }
+        used[i]=0;
     }
 
-    //TODO: what will happen if they have no intersection,-nan
-    Point getintersection(const Line &b)const{
-        Vec down=this->pos-b.pos;
-        double aa=b.dirc.cross(down);
-        double bb=this->dirc.cross(b.dirc);
-        return this->pos+this->dirc*(aa/bb);
-    }
-
-    bool point_on_line(Point point){
-        if(!dirc.samed(point-pos))
-        return false;
-        if(sgn((point-pos).sqlen()-dirc.sqlen())>0)
-        return false;
+    if(dfs(10,0,bl_me,bl_en,m1,m2,m3,depth+1)){
+        ans_cards.push(-1);
+        ans_target.push(-1);
         return true;
     }
 
-    double get_distance(Point point){
-        Line ppd=getppd();
-        ppd.pos=point;
-
-        Point intersection=getintersection(ppd);
-
-        ppd.dirc=intersection-point;
-        Vec v=intersection-pos;
-
-        return abs(v.cross(point-pos)/v.len());
-    }
-
-    double get_distance(Line line){
-        return get_distance(line.pos);
-    }
-};
-struct P{
-    int i;
-    Point p;
-    bool origin;
-    P(Point p,bool origin,int i=0):p(p),origin(origin),i(i){}
-};
-vector<P> points;
-int ans[MAXN];
+    return false;
+}
+int mc1,mc2,mc3;
+int bl_me,bl_en;
 int main(){
-    int nlen,qlen;cin>>nlen>>qlen;
-    for(int i=0;i<nlen;i++){
-        int x,y;cin>>x>>y;
-        points.push_back(P(Point(x,y),1));
+    ios::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    int kase;cin>>kase;
+    while(kase--){
+        memset(used,0,sizeof(used));
+        while(!ans_cards.empty())ans_cards.pop();
+        while(!ans_target.empty())ans_target.pop();
+
+        cin>>nlen;
+        cin>>bl_me>>bl_en;
+
+        cin>>md1>>mc1>>mx1;
+        cin>>md2>>mc2>>mx2;
+        cin>>md3>>mc3>>mx3;
+        for(int i=0;i<nlen;i++){
+            cards[i].cost=cards[i].damage=cards[i].power=cards[i].type=0;
+            int type;cin>>type;
+            if(type==1 || type==2){
+                int cost,x,y;
+                cin>>cost>>x>>y;
+                cards[i].type=type;
+                cards[i].cost=cost;
+                cards[i].damage=x;
+                cards[i].power=y;
+            }else{
+                int cost,x;
+                cin>>cost>>x;
+                cards[i].type=type;
+                cards[i].cost=cost;
+                cards[i].damage=x;
+            }
+        }
+        ans_cards.push(-1);
+        ans_target.push(-1);
+        if(dfs(10,0,bl_me,bl_en,mc1,mc2,mc3,0)){
+            cout<<"Yes\n";
+        }else{
+            cout<<"No\n";
+            continue;
+        }
+        
+        int block=0;
+        while(!ans_cards.empty()){
+            queue<int> pack_ans,pack_target;
+            while(!ans_cards.empty() && ans_cards.top()!=-1){
+                pack_ans.push(ans_cards.top());
+                ans_cards.pop();
+                pack_target.push(ans_target.top());
+                ans_target.pop();
+            }
+
+            if(!ans_cards.empty()){
+                ans_cards.pop();
+                ans_target.pop();
+            }
+
+            if(pack_ans.empty())continue;
+
+            cout<<pack_ans.size()<<"\n";
+            while(!pack_ans.empty()){
+                cout<<pack_ans.front()<<" ";
+                pack_ans.pop();
+            }
+            cout<<"\n";
+            while(!pack_target.empty()){
+                cout<<pack_target.front()<<" ";
+                pack_target.pop();
+            }
+            cout<<"\n";
+            block++;            
+        }
+        while(block<3){
+            cout<<"0\n";
+            block++;
+        }
     }
-    for(int i=0;i<qlen;i++){
-        int x,y;cin>>x>>y;
-        points.push_back(P(Point(x,y),0));
-    }
+
+    return 0;
 }

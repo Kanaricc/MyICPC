@@ -1,110 +1,130 @@
-/* CODEFORCES 1221F
- * 题目要求在一个平面坐标系的y=x上确定一正方形的左下角和右上角的点.要求该正方形框住的点的权值和减去正方形边长最大.
- * 可以发现,当一个点x与y坐标的较小的大于l,较大的小于r,该点就位于lr所确定的正方形中.
- * 二维偏序问题.将点按照x坐标排序后,使用一个树状数组来维护到某个y坐标的权值和.
- * 寻找所有权值前缀和的最大值即可.
- * 
- * 这个代码的问题在于,还没有离散化
- */
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
 
-
-#include <iostream>
-#include <cstring>
-#include <algorithm>
-#include <cstring>
-using namespace std;
-const int MAXN=50;
-
-int dPre[MAXN],dSum[MAXN];
-int dy[MAXN];
-int lc[MAXN],rc[MAXN],idx=0;
-
-void build(int &n,int l,int r){
-    if(!n)n=++idx;
-    if(l>=r){
-        dPre[n]=dSum[n]=0;
-        dy[n]=r;
-        return;
-    }
-
-    int mid=(l+r)/2;
-    build(lc[n],l,mid);
-    build(rc[n],mid+1,r);
+struct Node
+{
+	int a,b,c;
+	int id;
+	void read(int i)
+	{
+		scanf("%d%d%d",&a,&b,&c);
+		id=i;
+	}
+};
+Node minion[15];
+struct Node2
+{
+	int ID,Type,Cost,Damage,Spell_Power;
+	int Target,Round;
+	bool Used;
+	void read(int i)
+	{
+		scanf("%d",&Type);
+		if(Type==1||Type==2) scanf("%d%d%d",&Cost,&Damage,&Spell_Power);
+		else scanf("%d%d",&Cost,&Damage);
+		ID=i;
+		Target=-1;
+	}
+};
+Node2 card[15];
+int n,HP,HP2;
+Node2 st[15][15];
+int ln[15];
+inline int min(int x,int y)
+{
+	return x<y?x:y;
 }
-
-void collect(int n){
-    dSum[n]=dSum[lc[n]]+dSum[rc[n]];
-    if(dPre[lc[n]]-dy[lc[n]]>dSum[lc[n]]+dPre[rc[n]]-dy[rc[n]]){
-        dPre[n]=dPre[lc[n]];
-        dy[n]=dy[lc[n]];
-    }else{
-        dPre[n]=dSum[lc[n]]+dPre[rc[n]];
-        dy[n]=dy[rc[n]];
-    }
+inline int max(int x,int y)
+{
+	return x>y?x:y;
 }
-
-void modify(int p,int x,int L,int R,int n){
-    if(p==L && p==R){
-        dSum[n]+=x;
-        dPre[n]=max(0,dSum[n]);
-        return;
-    }
-
-    int mid=(L+R)/2;
-    if(p<=mid)modify(p,x,L,mid,lc[n]);
-    if(mid<p)modify(p,x,mid+1,R,rc[n]);
-
-    collect(n);
+bool Defeat=false;
+void dfs(int HP,int HP2,int Mana,int Round,bool Type3,int Spell_Power)
+{
+	if(Defeat) return;
+	if(HP2==0)
+	{
+		printf("Yes\n");
+		for(int i=1;i<=3;i++)
+		{
+			if(ln[i])
+			{
+				printf("%d\n",ln[i]);
+				for(int j=1;j<=ln[i];j++) printf("%d ",st[i][j].ID);
+				printf("\n");
+				for(int j=1;j<=ln[i];j++) printf("%d ",st[i][j].Target);
+				printf("\n");
+			}
+			else printf("0\n");
+		}
+		Defeat=true;
+		return;
+	}
+	if(Round==4) return;
+	for(int i=1;i<=n;i++)
+	{
+		if(card[i].Used==false&&card[i].Cost<=Mana&&(Type3==false||card[i].Type==3))
+		{
+			st[Round][++ln[Round]]=card[i];
+			card[i].Used=true;
+			if(card[i].Type==3)
+			{
+				st[Round][ln[Round]].Target=0;
+				dfs(HP,max(0,HP2-card[i].Damage-Spell_Power),Mana-card[i].Cost,Round,true,Spell_Power);
+				for(int j=1;j<=3;j++)
+				{
+					if(minion[j].b) 
+					{
+						st[Round][ln[Round]].Target=j;
+						int tmp=minion[j].b;
+						minion[j].b=max(0,minion[j].b-card[i].Damage-Spell_Power);
+						dfs(HP,HP2,Mana-card[i].Cost,Round,true,Spell_Power);
+						minion[j].b=tmp;
+					}
+				}
+			}
+			else
+			{
+				if(card[i].Type==1)
+				{
+					int tmp[4]={0};
+					for(int j=1;j<=3;j++)
+					{
+						tmp[j]=minion[j].b;
+						minion[j].b=max(0,minion[j].b-card[i].Damage-Spell_Power);
+					}
+					dfs(HP,HP2,Mana-card[i].Cost,Round,false,Spell_Power+card[i].Spell_Power);
+					for(int j=1;j<=3;j++) minion[j].b=tmp[j];
+				}
+				else dfs(HP,max(0,HP2-card[i].Damage-Spell_Power),Mana-card[i].Cost,Round,false,Spell_Power+card[i].Spell_Power);
+			}
+			card[i].Used=false;
+			ln[Round]--;
+		}
+	}
+	int ATK=0;
+	for(int i=1;i<=3;i++) if(minion[i].b) ATK+=minion[i].a;
+	if(ATK>=HP) return;
+	for(int i=1;i<=3;i++) minion[i].b=minion[i].c;
+	dfs(HP-ATK,HP2,10,Round+1,false,0);
 }
-
-pair<int,int> query(int l,int r,int L,int R,int n){
-    if(l<=L && R<=r){
-        return make_pair(dPre[n],dy[n]);
-    }
-
-    int mid=(L+R)/2;
-    pair<int,int> res;
-    if(l<=mid)res=max(res,query(l,r,L,mid,lc[n]));
-    if(mid<r)res=max(res,query(l,r,mid+1,R,rc[n]));
-    return res;
-}
-struct Point{
-    int x,y,w;
-}points[MAXN];
-int root;
-int main(){
-    int nlen;cin>>nlen;
-    int miny=0x3f3f3f3f,maxy=-0x3f3f3f3f;
-    for(int i=1;i<=nlen;i++){
-        Point &p=points[i];
-        cin>>p.x>>p.y>>p.w;
-        if(p.x>p.y)swap(p.x,p.y);
-        miny=min(miny,p.y);
-        maxy=max(maxy,p.y);
-    }
-    sort(points+1,points+1+nlen,[](const Point &a,const Point &b){
-        if(a.x!=b.x)return a.x<b.x;
-        return a.y<b.y;
-    });
-
-    build(root,miny,maxy);
-
-    int ans=0;
-    
-    for(int i=nlen;i>=1;i--){
-        int thisx=points[i].x;
-        while(i>=1 && points[i].x==thisx){
-            Point &p=points[i];
-            cout<<"add "<<p.w<<" to "<<p.y<<endl;
-            modify(p.y,p.w,miny,maxy,root);
-            i--;
-        }
-        i++;
-
-        pair<int,int> res=query(miny,maxy,miny,maxy,root);
-        cout<<res.first<<" "<<res.second<<endl;
-        if(res.second>=thisx)ans=max(ans,res.first-res.second+thisx);
-    }
-    cout<<ans<<endl;
-
-}
+int main()
+{
+	int T;
+	scanf("%d",&T);
+	while(T--)
+	{
+		Defeat=false;
+		memset(ln,0,sizeof(ln));
+		memset(st,0,sizeof(st));
+		scanf("%d",&n);
+		scanf("%d%d",&HP,&HP2);
+		for(int i=1;i<=3;i++)
+			minion[i].read(i);
+		for(int i=1;i<=n;i++)
+			card[i].read(i);
+		dfs(HP,HP2,10,1,false,0);
+		if(Defeat==false) printf("No\n");
+	}
+} 
