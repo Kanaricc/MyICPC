@@ -60,8 +60,9 @@ struct Vec{
     bool leftby(const Vec &b)const{
         return sgn(b.cross(*this))>0;
     }
+    //该函数认为端点也和线段同向
     bool samed(const Vec &b)const{
-        return sgn(this->cross(b))==0 && sgn(this->dot(b))>0;
+        return sgn(this->cross(b))==0 && sgn(this->dot(b))>=0;
     }
     bool operator<(const Vec &b)const{
         return this->polar()<b.polar();
@@ -94,11 +95,10 @@ struct Line{
         double bb=this->dirc.cross(b.dirc);
         return this->pos+this->dirc*(aa/bb);
     }
-
     bool point_on_line(Point point){
         if(!dirc.samed(point-pos))
         return false;
-        if(sgn((point-pos).sqlen()-dirc.sqlen())>0)
+        if(sgn((point-pos).sqlen()-dirc.sqlen())>=0)
         return false;
         return true;
     }
