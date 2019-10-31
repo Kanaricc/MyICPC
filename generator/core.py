@@ -8,7 +8,8 @@ import settings
 
 
 class Generator(object):
-	PATTERN = re.compile(r'^\w+?_(?P<name>.+?)(\.(?P<lang>\w+)){0,1}$')
+	#PATTERN = re.compile(r'^\w+?_(?P<name>.+?)(\.(?P<lang>\w+)){0,1}$')
+	PATTERN = re.compile(r'(?P<name>.+?)(\.(?P<lang>\w+)){0,1}$')
 
 	def __init__(self):
 		self.content = []
@@ -24,7 +25,7 @@ class Generator(object):
 			#dr=os.path.dirname(os.path.abspath('__file__'))
 			#print(dr)
 			#folder = Path(dr[0:dr.rfind('\\')]+'\\code')
-			folder = Path('..\code')
+			folder = Path('../code')
 
 		# 如果folder内只有一个项目，则不输出子标题
 		unique = False
@@ -44,6 +45,7 @@ class Generator(object):
 			if item.is_dir():
 				self.populate(item, depth + 1 - unique)
 			if item.is_file():
+				print(item)
 				self.populate_file(name, lang, item.as_posix(), depth + 1 - unique)
 
 		return '\n'.join(self.content)
