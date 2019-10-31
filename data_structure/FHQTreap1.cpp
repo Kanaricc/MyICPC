@@ -1,7 +1,16 @@
-#include <iostream>
+//非旋Treap
+/*****
+ * 0.插入，删除
+ * 1.切分
+ * 2.合并
+ * 3.查询与反查排名
+/*
+#include <vector>
 using namespace std;
 const int MAXN=1000;
+*/
 
+namespace FHQTree{
 struct Node{
     Node *ch[2];
     int key,val,sz;
@@ -76,6 +85,10 @@ void remove(int v){
     D y=split(x.second,1);
     root=merge(x.first,y.second);
 }
+}
+
+/*
+using namespace FHQTree;
 int main(){
     int op,x;
     while(cin>>op>>x){
@@ -90,3 +103,4 @@ int main(){
     }
     return 0;
 }
+*/

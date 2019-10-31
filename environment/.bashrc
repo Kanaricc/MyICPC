@@ -1,0 +1,1 @@
+alias g++='g++ -Wall -Wextra -g -fsanitize=undefined -std=c++14'
