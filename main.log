@@ -1,7 +1,7 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (MiKTeX 2.9.7140 64-bit) (preloaded format=xelatex 2019.8.27)  31 OCT 2019 18:49
+This is XeTeX, Version 3.14159265-2.6-0.999991 (MiKTeX 2.9.7140 64-bit) (preloaded format=xelatex 2019.8.27)  31 OCT 2019 19:58
 entering extended mode
-**./main.tex
-(main.tex
+**c:/Users/iovo7/Documents/code/MyICPC/main.tex
+(c:/Users/iovo7/Documents/code/MyICPC/main.tex
 LaTeX2e <2018-12-01>
 (elegantbook.cls
 Document Class: elegantbook 2019/08/18 v3.09 ElegantBook document class
@@ -2107,13 +2107,13 @@ in.aex <nul: /p x=^%~$PATH:i>> main.aex)...executed.
 
 runsystem(del main.aex)...executed.
 
-
-No file main.aux.
+ (main.aux)
 \openout1 = `main.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/ntxmi/m/it on input line 17.
 LaTeX Font Info:    Try loading font information for OML+ntxmi on input line 17
 .
+
 ("C:\Program Files\MiKTeX 2.9\tex/latex/newtx\omlntxmi.fd"
 File: omlntxmi.fd 2015/08/25 Fontinst v1.933 font definitions for OML/ntxmi.
 )
@@ -2230,12 +2230,10 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 17.
 LaTeX Info: Redefining \pageref on input line 17.
 LaTeX Info: Redefining \nameref on input line 17.
+
+(main.out) (main.out)
 \@outlinefile=\write9
 \openout9 = `main.out'.
-
-
-
-Package hyperref Warning: Rerun to get /PageLabels entry.
 
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
@@ -2274,44 +2272,148 @@ Package hyperref Info: Option `pageanchor' set `false' on input line 19.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
+File: ./figure/cover.jpg Graphic file (type bmp)
+<./figure/cover.jpg>
+LaTeX Font Info:    Font shape `T1/ntxtlf/bx/n' in size <10.95> not available
+(Font)              Font shape `T1/ntxtlf/b/n' tried instead on input line 19.
+LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
+(Font)              scaled to size 10.95pt on input line 19.
+LaTeX Font Info:    Font shape `T1/ntxtlf/bx/n' in size <24.88> not available
+(Font)              Font shape `T1/ntxtlf/b/n' tried instead on input line 19.
+LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
+(Font)              scaled to size 24.88pt on input line 19.
+LaTeX Font Info:    Try loading font information for OT1+ntxtlf on input line 1
+9.
+ ("C:\Program Files\MiKTeX 2.9\tex/latex/newtx\ot1ntxtlf.fd"
+File: ot1ntxtlf.fd 2015/01/17 v1.0 font definition file for OT1/ntx/tlf
+)
+LaTeX Font Info:    Font shape `OT1/ntxtlf/m/n' will be
+(Font)              scaled to size 10.95pt on input line 19.
+LaTeX Font Info:    Font shape `OT1/ntxtlf/m/n' will be
+(Font)              scaled to size 8.0pt on input line 19.
+LaTeX Font Info:    Font shape `OT1/ntxtlf/m/n' will be
+(Font)              scaled to size 6.1pt on input line 19.
+LaTeX Font Info:    Try loading font information for U+ntxmia on input line 19.
 
-LaTeX Warning: File `cover.jpg' not found on input line 19.
+ ("C:\Program Files\MiKTeX 2.9\tex/latex/newtx\untxmia.fd"
+File: untxmia.fd 2018/04/14 Fontinst v1.933 font definitions for U/ntxmia.
+)
+LaTeX Font Info:    Try loading font information for U+ntxsym on input line 19.
 
-! Unable to load picture or PDF file 'cover.jpg'.
-<to be read again> 
-                   }
-l.19 \maketitle
-               
-? 
-! Interruption.
-<argument> ...\Gread@@xetex@box \Gin@pagebox \fi }
-                                                  \def \Gin@llx {0}\let \Gin...
-l.19 \maketitle
-               
-? 
 
-! Package graphics Error: Division by 0.
+("C:\Program Files\MiKTeX 2.9\tex/latex/newtx\untxsym.fd"
+File: untxsym.fd 2015/03/20 Fontinst v1.933 font definitions for U/ntxsym.
+)
+LaTeX Font Info:    Try loading font information for U+ntxsyc on input line 19.
 
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.19 \maketitle
-               
-?     asad
-Type <return> to proceed, S to scroll future error messages,
-R to run without stopping, Q to run quietly,
-I to insert something, E to edit your file,
-1 or ... or 9 to ignore the next 1 to 9 tokens of input,
-H for help, X to quit.
-? x
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/newtx\untxsyc.fd"
+File: untxsyc.fd 2012/04/12 Fontinst v1.933 font definitions for U/ntxsyc.
+)
+LaTeX Font Info:    Try loading font information for U+esint on input line 19.
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/esint\uesint.fd"
+File: uesint.fd 
+)
+LaTeX Font Info:    Try loading font information for U+rsfs on input line 19.
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/jknappen\ursfs.fd"
+File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
+)
+LaTeX Font Info:    Try loading font information for U+msa on input line 19.
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\umsa.fd"
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 19.
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\umsb.fd"
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+LaTeX Font Info:    Font shape `T1/ntxtlf/bx/n' in size <14.4> not available
+(Font)              Font shape `T1/ntxtlf/b/n' tried instead on input line 19.
+LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
+(Font)              scaled to size 14.4pt on input line 19.
+
+Package fontspec Info: Could not resolve font "KaiTi/BI" (it probably doesn't
+(fontspec)             exist).
+
+
+Package fontspec Info: Could not resolve font "KaiTi/B" (it probably doesn't
+(fontspec)             exist).
+
+
+Package fontspec Info: Could not resolve font "KaiTi/I" (it probably doesn't
+(fontspec)             exist).
+
+
+Package fontspec Info: Font family 'KaiTi(0)' created for font 'KaiTi' with
+(fontspec)             options [Script={CJK}].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->"KaiTi/OT:script=hani;language=DFLT;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+
+File: ./figure/logo.png Graphic file (type bmp)
+<./figure/logo.png>
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
+(Font)              scaled to size 10.95pt on input line 19.
+ [1
+
+
+
+]
+LaTeX Font Info:    Font shape `T1/ntxtlf/bx/n' in size <17.28> not available
+(Font)              Font shape `T1/ntxtlf/b/n' tried instead on input line 20.
+LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
+(Font)              scaled to size 17.28pt on input line 20.
+
+("C:\Program Files\MiKTeX 2.9\tex/generic/pgfornament/vectorian\vectorian88.pgf
+") (main.toc)
+\tf@toc=\write10
+\openout10 = `main.toc'.
+
+ [1
+
+
+]
+Package hyperref Info: Option `pageanchor' set `true' on input line 22.
+
+第 1\tmspace +\thinmuskip {.1667em}章 1.
+("C:\Program Files\MiKTeX 2.9\tex/generic/pgfornament/vectorian\vectorian88.pgf
+")
+LaTeX Font Info:    Font shape `T1/ntxtlf/bx/n' in size <12> not available
+(Font)              Font shape `T1/ntxtlf/b/n' tried instead on input line 27.
+LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
+(Font)              scaled to size 12.0pt on input line 27.
  
+AED: lastpage setting LastPage
+[1
+
+
+]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 29.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 29.
+ (main.aux)
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 29.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 29.
+Package rerunfilecheck Info: File `main.out' has not changed.
+(rerunfilecheck)             Checksum: 595FD73D32620E5682090144E70849F1.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ ) 
 Here is how much of TeX's memory you used:
- 48758 strings out of 427669
- 975232 string characters out of 3149215
- 1378949 words of memory out of 3000000
- 52149 multiletter control sequences out of 15000+200000
- 539556 words of font info for 41 fonts, out of 3000000 for 9000
+ 49091 strings out of 427669
+ 982168 string characters out of 3149215
+ 1380949 words of memory out of 3000000
+ 52405 multiletter control sequences out of 15000+200000
+ 570560 words of font info for 90 fonts, out of 3000000 for 9000
  1348 hyphenation exceptions out of 8191
- 66i,2n,124p,2604b,446s stack positions out of 5000i,500n,10000p,200000b,50000s
-No pages of output.
+ 66i,11n,124p,2639b,971s stack positions out of 5000i,500n,10000p,200000b,50000s
+
+Output written on main.pdf (3 pages).
