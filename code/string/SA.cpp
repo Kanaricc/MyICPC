@@ -51,7 +51,7 @@ inline void SA()
             b = sa[i - 1] + k > n ? -1 : x[sa[i - 1] + k];
             y[sa[i]] = (x[sa[i]] == x[sa[i - 1]]) && (a == b) ? p : ++p;
         }
-        swap(x, y);
+        swap(x, y);//ATTENTION TO THIS LINE. IT'S O(N)
         m = p;
     }
 }
