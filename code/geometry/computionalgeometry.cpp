@@ -202,27 +202,14 @@ vector<Point> convexHull(vector<Point> &points){
     return stack;
 }
 
-double get_area(vector<Point> &points){
-    if(points.size()<3){
-        return -1;
-    }
-    sort(points.begin(),points.end(),[](Point &a,Point &b){
-        return a.polar()<b.polar();
-    });
-    Point base(0,0);
-    Point last=points[0];
-    double res=0;
-    for(int i=1;i<points.size();i++){
-        Vec a=last-base,b=points[i]-base;
-        res+=a.cross(b)/2;
-
-        last=points[i];
-    }
-    //add the last point(also the first point)
-    Vec a=last-base,b=points[0]-base;
-    res+=a.cross(b)/2;
-
-    return res;
+double getPolygonArea(const vector<Point>& points)
+{
+    int point_num = points.size();
+    if (point_num < 3)return 0.0;
+    double s = 0;
+    for (int i = 0; i < point_num; ++i)
+        s += points[i].x * points[(i + 1) % point_num].y - points[i].y * points[(i + 1) % point_num].x;
+    return fabs(s / 2.0);
 }
 
 bool point_in_polygen(Point point, vector<Point> &points){
