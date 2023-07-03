@@ -5,13 +5,13 @@ using ll=long long;
 const int MAXN=10;
 */
 
-const int MAXFT=500000;
-int ft[MAXFT];
+const int XN=5000;
+int ft[XN];
 inline int lowbit(int x) {
     return x&-x;
 }
 inline void ftadd(int pos, int x) {
-    while (pos <= MAXN) {
+    while (pos < XN) {
         ft[pos] += x;
         pos += lowbit(pos);
     }
